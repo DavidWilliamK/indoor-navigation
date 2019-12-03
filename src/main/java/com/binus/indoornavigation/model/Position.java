@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Coordinate {
+public class Position {
 
-    private int x;
-    private int y;
+    private int latitude;
+    private int longitude;
 
 }
