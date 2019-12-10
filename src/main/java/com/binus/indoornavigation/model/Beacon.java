@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Coordinate {
+public class Beacon {
 
-    private Double x;
-    private Double y;
+    private int id;
+    private int signalStrength;
 
 }

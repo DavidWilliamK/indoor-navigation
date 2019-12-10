@@ -1,7 +1,9 @@
 package com.binus.indoornavigation.controller;
 
+import com.binus.indoornavigation.model.Beacon;
 import com.binus.indoornavigation.model.Coordinate;
 import com.binus.indoornavigation.model.Position;
+import com.binus.indoornavigation.service.PositionTransformationImpl;
 import com.binus.indoornavigation.service.CoordinateTransformationImpl;
 import com.binus.indoornavigation.web_model.response.BaseResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +11,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/api/position")
 public class PositionController {
+
+    @Autowired
+    PositionTransformationImpl positionTransformation;
 
     @Autowired
     CoordinateTransformationImpl coordinateTransformation;
@@ -24,14 +31,14 @@ public class PositionController {
 
     @PostMapping
     public ResponseEntity getPositionFromCoordinates (
-            @RequestBody Coordinate request
+            @RequestBody List<Beacon> request
     ) {
 
         System.out.println("Init " + request);
 
-        Position position = coordinateTransformation.getTransformedPosition(request);
+        Coordinate coordinate = coordinateTransformation.getCoordinateFromBeacons(request);
 
-        System.out.println(position);
+        Position position = positionTransformation.getTransformedPosition(coordinate);
 
         return new ResponseEntity<>(
                 new BaseResponse<>(

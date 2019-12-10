@@ -1,18 +1,30 @@
 package com.binus.indoornavigation.service;
 
+import com.binus.indoornavigation.model.Beacon;
 import com.binus.indoornavigation.model.Coordinate;
-import com.binus.indoornavigation.model.Position;
-import com.binus.indoornavigation.model.enums.Binus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CoordinateTransformationImpl {
 
-    public Position getTransformedPosition (Coordinate coordinate) {
-        System.out.println(coordinate.getX() + ", " + coordinate.getY());
-        int random = (int)(Math.random() * 5);
-        return Binus.values()[random].getCampus();
+    public Coordinate getCoordinateFromBeacons (List<Beacon> beacons) {
+        double coorX = 0.0;
+        double coorY = 0.0;
+        for (Beacon beacon : beacons) {
+            System.out.println("BeaconID: " + beacon.getId() + ", Signal Strength: " + beacon.getSignalStrength() + "dB");
 
+//            Operation for X-axis
+//            Note that this is still dummy function, thus it will only sum all beacon's RSSI
+            coorX+= beacon.getSignalStrength();
+
+//            Operation for Y-axis
+//            Note that this is still dummy function, thus it will only sum all beacon's RSSI
+            coorY+= beacon.getSignalStrength();
+
+        }
+        return new Coordinate(coorX, coorY);
     }
+
 }
