@@ -1,6 +1,6 @@
 package com.binus.indoornavigation.controller;
 
-import com.binus.indoornavigation.model.Beacon;
+import com.binus.indoornavigation.model.Signals;
 import com.binus.indoornavigation.model.Coordinate;
 import com.binus.indoornavigation.model.Position;
 import com.binus.indoornavigation.service.PositionTransformationImpl;
@@ -25,13 +25,20 @@ public class PositionController {
     CoordinateTransformationImpl coordinateTransformation;
 
     @GetMapping
-    public String dummyApi(){
-        return "Hi! Your backend is working fine, it is updated tho! Try it out using postman or etc.";
+    public ResponseEntity dummyApi(){
+
+        List<Signals> signals = coordinateTransformation.getAllBeacons();
+
+        return new ResponseEntity<>(
+                new BaseResponse<>(
+                        "OK", HttpStatus.OK.value(), signals
+                ), HttpStatus.OK
+        );
     }
 
     @PostMapping
     public ResponseEntity getPositionFromCoordinates (
-            @RequestBody List<Beacon> request
+            @RequestBody List<Signals> request
     ) {
 
         System.out.println("Init " + request);
