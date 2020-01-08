@@ -18,15 +18,15 @@ public class ReferencePointDetails {
 
     @Id
     @Column(name = "referencepointdetailid")
-    private int id;
+    private Integer id;
 
     @Column(name = "referencepointid")
-    private int pointId;
+    private Integer pointId;
 
     @Column(name = "coordinatex")
-    private int coor_x;
+    private Integer coor_x;
 
     @Column(name = "coordinatey")
-    private int coor_y;
+    private Integer coor_y;
 
 }

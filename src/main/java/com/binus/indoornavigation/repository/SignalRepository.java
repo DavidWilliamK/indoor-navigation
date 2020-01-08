@@ -10,4 +10,10 @@ public interface SignalRepository extends JpaRepository<Signals, Integer> {
     List<Signals> findAll();
 
     Optional<Signals> findById(Integer beaconId);
+
+    Optional<Signals> findTopByRSSIIsLessThanEqual(Double rssi);
+
+    Optional<Signals> findTopByRSSIGreaterThanEqualAndAndBeaconId(Integer beaconId, Double rssi);
+
+//    TODO: Make a custom method to get the closest signals based on sorted value of RSSI
 }

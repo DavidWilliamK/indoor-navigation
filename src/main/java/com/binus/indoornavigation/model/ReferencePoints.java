@@ -19,7 +19,7 @@ public class ReferencePoints {
 
     @Id
     @Column(name = "referencepointid")
-    private int id;
+    private Integer id;
 
     @Column(name = "mapid")
     private BigInteger mapId;

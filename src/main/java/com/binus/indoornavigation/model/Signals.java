@@ -21,12 +21,12 @@ public class Signals {
     private String id;
 
     @Column(name = "rssi")
-    private double RSSI;
+    private Double RSSI;
 
     @Column(name = "beaconid")
     private String beaconId;
 
     @Column(name = "referencepointid")
-    private int referencePointId;
+    private Integer referencePointId;
 
 }

@@ -1,5 +1,6 @@
 package com.binus.indoornavigation.controller;
 
+import com.binus.indoornavigation.model.Beacons;
 import com.binus.indoornavigation.model.Signals;
 import com.binus.indoornavigation.model.Coordinate;
 import com.binus.indoornavigation.model.Position;
@@ -38,7 +39,7 @@ public class PositionController {
 
     @PostMapping
     public ResponseEntity getPositionFromCoordinates (
-            @RequestBody List<Signals> request
+            @RequestBody List<Beacons> request
     ) {
 
         System.out.println("Init " + request);

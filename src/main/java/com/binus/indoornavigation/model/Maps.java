@@ -18,7 +18,7 @@ public class Maps {
 
     @Id
     @Column(name = "mapid")
-    private int id;
+    private Integer id;
 
     @Column(name = "mapname")
     private String name;
