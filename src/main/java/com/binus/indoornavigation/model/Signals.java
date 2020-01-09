@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @Entity
 @Table(name = "signals")
-public class Signals {
+public class Signals implements Comparable{
 
     @Id
     @Column(name = "signalid")
@@ -29,4 +29,12 @@ public class Signals {
     @Column(name = "referencepointid")
     private Integer referencePointId;
 
+    @Override
+    public int compareTo(Object signals) {
+        return cleanId(this.beaconId) - (cleanId(((Signals)signals).getBeaconId()));
+    }
+
+    private Integer cleanId(String id) {
+        return Integer.parseInt(id.replace("Beacon", ""));
+    }
 }

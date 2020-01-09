@@ -7,10 +7,15 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Beacons {
+public class Beacons implements Comparable{
 
     private String id;
 
     private Double RSSI;
 
+    @Override
+    public int compareTo(Object beacons) {
+        Double compareRssi = ((Beacons)beacons).getRSSI();
+        return (int)(compareRssi-this.RSSI);
+    }
 }

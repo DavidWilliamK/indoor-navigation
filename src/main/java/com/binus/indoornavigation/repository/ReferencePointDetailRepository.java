@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface ReferencePointDetailRepository extends JpaRepository<ReferencePointDetails, Integer> {
     Optional<ReferencePointDetails> findById(Integer id);
+
+    Optional<ReferencePointDetails> findByPointId(Integer id);
 }

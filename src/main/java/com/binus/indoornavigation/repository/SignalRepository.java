@@ -11,6 +11,10 @@ public interface SignalRepository extends JpaRepository<Signals, Integer> {
 
     Optional<Signals> findById(Integer beaconId);
 
+    List<Signals> findAllByBeaconIdAndRSSI(String beaconId, Double rssi);
+
+    List<Signals> findAllByReferencePointId(Integer id);
+
     Optional<Signals> findTopByRSSIIsLessThanEqual(Double rssi);
 
     Optional<Signals> findTopByRSSIGreaterThanEqualAndAndBeaconId(Integer beaconId, Double rssi);
