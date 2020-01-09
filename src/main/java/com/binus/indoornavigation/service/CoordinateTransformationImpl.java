@@ -25,7 +25,7 @@ public class CoordinateTransformationImpl {
 
     public List<Signals> getAllBeacons() {return signalRepository.findAll(); }
 
-    public Coordinate getCoordinateFromBeacons (List<Beacons> beacons) {
+    public Coordinate getCoordinateFromBeacons (List<Beacons> request) {
 //        How this part works:
         /*
         First you take the list of beacons obtained from the request
@@ -38,11 +38,12 @@ public class CoordinateTransformationImpl {
 
         double coorX = 0.0;
         double coorY = 0.0;
+        ArrayList<Beacons> beacons = new ArrayList<Beacons>(request);
         Collections.sort(beacons);
-        ArrayList<Beacons> strongestSignals = new ArrayList<Beacons>(beacons.subList(0, 8));
-        System.out.println("Top 8 signals: " + strongestSignals);
+        ArrayList<Beacons> strongestBeacons = new ArrayList<Beacons>(beacons.subList(0, 8));
+        System.out.println("Top 8 signals: " + strongestBeacons);
         List<Signals> signals = new ArrayList<Signals>();
-        for (Beacons source : strongestSignals) {
+        for (Beacons source : strongestBeacons) {
             signals.addAll(signalRepository.findAllByBeaconIdAndRSSI(source.getId(), source.getRSSI()));
         }
         ArrayList<Double> distances = new ArrayList<Double>();
@@ -51,7 +52,7 @@ public class CoordinateTransformationImpl {
             Collections.sort(testingData);
             double distance = 0.0;
             for (int idx = 0; idx < testingData.size(); idx++) {
-                distance+= StrictMath.pow(beacons.get(idx).getRSSI() - testingData.get(idx).getRSSI(), 2);
+                distance+= StrictMath.pow(request.get(idx).getRSSI() - testingData.get(idx).getRSSI(), 2);
             }
             distances.add(Math.sqrt(distance));
         }
