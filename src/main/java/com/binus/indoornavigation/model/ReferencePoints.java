@@ -24,4 +24,11 @@ public class ReferencePoints {
     @Column(name = "mapid")
     private BigInteger mapId;
 
+
+    @Column(name = "coordinatex")
+    private Integer coor_x;
+
+    @Column(name = "coordinatey")
+    private Integer coor_y;
+
 }

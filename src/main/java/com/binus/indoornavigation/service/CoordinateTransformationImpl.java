@@ -1,12 +1,10 @@
 package com.binus.indoornavigation.service;
 
 import com.binus.indoornavigation.model.*;
-import com.binus.indoornavigation.repository.ReferencePointDetailRepository;
 import com.binus.indoornavigation.repository.ReferencePointRepository;
 import com.binus.indoornavigation.repository.SignalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sun.misc.Signal;
 
 import java.util.*;
 
@@ -19,48 +17,72 @@ public class CoordinateTransformationImpl {
     @Autowired
     private ReferencePointRepository referencePointRepository;
 
-    @Autowired
-    private ReferencePointDetailRepository detailRepository;
-
 
     public List<Signals> getAllBeacons() {return signalRepository.findAll(); }
 
     public Coordinate getCoordinateFromBeacons (List<Beacons> request) {
-//        How this part works:
-        /*
-        First you take the list of beacons obtained from the request
-        Then sort the beacons based on signalStrength using the custom-made sort located on file "model/Beacons"
-        Then use subList to take top 8 data
-        Use those 8 beacons to retrieve their corresponding signals (Each beacon may have more than 1 signal)
-
-
-         */
-
         double coorX = 0.0;
         double coorY = 0.0;
         ArrayList<Beacons> beacons = new ArrayList<Beacons>(request);
-        Collections.sort(beacons);
-        ArrayList<Beacons> strongestBeacons = new ArrayList<Beacons>(beacons.subList(0, 8));
-        System.out.println("Top 8 signals: " + strongestBeacons);
-        List<Signals> signals = new ArrayList<Signals>();
+        Collections.sort(beacons); //Sort the beacon using custom sort based on signal strength
+        int size = 8;
+        if (request.size() < size)
+            size = request.size();
+        ArrayList<Beacons> strongestBeacons = new ArrayList<Beacons>(beacons.subList(0, size)); //Take 8 strongest
+        System.out.println("Top " + size +" signals: " + strongestBeacons);
+        Set<Integer> references = new HashSet<>(); //ReferencePointID
         for (Beacons source : strongestBeacons) {
-            signals.addAll(signalRepository.findAllByBeaconIdAndRSSI(source.getId(), source.getRSSI()));
+            List<Signals> temp = signalRepository.findAllByBeaconId(source.getId());
+            for (Signals s : temp) {
+                references.add(s.getReferencePointId());
+            }
         }
-        ArrayList<Double> distances = new ArrayList<Double>();
-        for (Signals signal: signals) {
-            ArrayList<Signals> testingData = new ArrayList<Signals>(signalRepository.findAllByReferencePointId(signal.getReferencePointId()));
+        SortedSet<Beacons> distances = new TreeSet<>(Collections.reverseOrder()); //Set of {ReferencePointId, Distance to query}
+        for (Integer reference: references) {
+            ArrayList<Signals> testingData = new ArrayList<Signals>(signalRepository.findAllByReferencePointId(reference));
             Collections.sort(testingData);
             double distance = 0.0;
-            for (int idx = 0; idx < testingData.size(); idx++) {
-                distance+= StrictMath.pow(request.get(idx).getRSSI() - testingData.get(idx).getRSSI(), 2);
+            for (int idx = 0; idx < request.size(); idx++) {
+                for (int i = 0; i < testingData.size(); i++) {
+                    if (testingData.get(i).getBeaconId().equals(request.get(idx).getId())) {
+                        distance+= StrictMath.pow(request.get(idx).getRSSI() - testingData.get(idx).getRSSI(), 2);
+                    }
+                }
             }
-            distances.add(Math.sqrt(distance));
+            Beacons temp = new Beacons(reference.toString(), distance);
+            distances.add(temp);
         }
-        System.out.println(distances);
-        System.out.println(distances.indexOf(Collections.min(distances)));
-        System.out.println(signals.get(distances.indexOf(Collections.min(distances))).getReferencePointId());
-        ReferencePointDetails detail = detailRepository.findByPointId(signals.get(distances.indexOf(Collections.min(distances))).getReferencePointId()).orElse(null);
-        return new Coordinate((double)detail.getCoor_x(), (double)detail.getCoor_y());
+        int closest = 5;
+        if (distances.size() < 5)
+            closest = distances.size();
+        List<Beacons> closestDistances = new ArrayList<Beacons>(new ArrayList<Beacons>(distances).subList(0, closest)); //5 closest referencePoints
+        System.out.println("Euclidean distances: " + closestDistances);
+
+
+        List<ReferencePoints> details = new ArrayList<>();
+        for (Beacons distance : closestDistances) {
+            details.add(referencePointRepository.findById(Integer.parseInt(distance.getId())).get());
+        }
+
+        Double totalWeight = 0.0;
+        for (int i = 0; i < closestDistances.size(); i++) {
+            if (closestDistances.get(i).getRSSI() == 0) {
+                coorX = details.get(i).getCoor_x();
+                coorY = details.get(i).getCoor_y();
+                totalWeight = 1.0;
+                break;
+            }
+            else {
+                Double weight = 1/Math.sqrt(closestDistances.get(i).getRSSI());
+                coorX+= weight * details.get(i).getCoor_x();
+                coorY+= weight * details.get(i).getCoor_y();
+                totalWeight+= weight;
+            }
+        }
+        coorX = coorX / totalWeight;
+        coorY = coorY / totalWeight;
+
+        return new Coordinate(coorX, coorY);
     }
 
 }

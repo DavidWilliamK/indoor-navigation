@@ -9,7 +9,9 @@ import java.util.Optional;
 public interface SignalRepository extends JpaRepository<Signals, Integer> {
     List<Signals> findAll();
 
-    Optional<Signals> findById(Integer beaconId);
+    Optional<Signals> findById(String beaconId);
+
+    List<Signals> findAllByBeaconId(String beaconId);
 
     List<Signals> findAllByBeaconIdAndRSSI(String beaconId, Double rssi);
 
