@@ -1,17 +1,27 @@
 package com.binus.indoornavigation.repository;
 
+import com.binus.indoornavigation.model.Beacons;
 import com.binus.indoornavigation.model.Signals;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface SignalRepository extends JpaRepository<Signals, Integer> {
     List<Signals> findAll();
 
-    Optional<Signals> findById(String beaconId);
+    Signals findById(String id);
+
+    Signals findByBeaconIdAndReferencePointId(String beaconId, Integer referencePointId);
+
+    Signals findTopByBeaconId(String beaconId);
+
+    List<Signals> findAllByReferencePointIdIn(Set<Integer> rpIds);
 
     List<Signals> findAllByBeaconId(String beaconId);
+
+    List<Signals> findAllByBeaconIdIn(List<String> beaconIds);
 
     List<Signals> findAllByBeaconIdAndRSSI(String beaconId, Double rssi);
 

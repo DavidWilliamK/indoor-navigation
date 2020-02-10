@@ -29,34 +29,54 @@ public class CoordinateTransformationImpl {
         if (request.size() < size)
             size = request.size();
         ArrayList<Beacons> strongestBeacons = new ArrayList<Beacons>(beacons.subList(0, size)); //Take 8 strongest
-        System.out.println("Top " + size +" signals: " + strongestBeacons);
         Set<Integer> references = new HashSet<>(); //ReferencePointID
+        ArrayList<String> ids = new ArrayList<>();
+        for (Beacons beacon:strongestBeacons) {
+            ids.add(beacon.getId());
+        }
+        List<Signals> rps = signalRepository.findAllByBeaconIdIn(ids);
         for (Beacons source : strongestBeacons) {
-            List<Signals> temp = signalRepository.findAllByBeaconId(source.getId());
-            for (Signals s : temp) {
+//            List<Signals> temp = signalRepository.findAllByBeaconId(source.getId());
+            for (Signals s : rps) {
                 references.add(s.getReferencePointId());
             }
         }
+        System.out.println(references);
         SortedSet<Beacons> distances = new TreeSet<>(Collections.reverseOrder()); //Set of {ReferencePointId, Distance to query}
+//        Loop 155
+        ArrayList<Signals> datas = new ArrayList<Signals>(signalRepository.findAllByReferencePointIdIn(references));
+        System.out.println(System.currentTimeMillis());
         for (Integer reference: references) {
-            ArrayList<Signals> testingData = new ArrayList<Signals>(signalRepository.findAllByReferencePointId(reference));
+            ArrayList<Signals> testingData = new ArrayList<>();
+            for (Signals data: datas) {
+                if (data.getReferencePointId().equals(reference)) {
+                    testingData.add(data);
+                }
+            }
             Collections.sort(testingData);
             double distance = 0.0;
+//            Loop 23
             for (int idx = 0; idx < request.size(); idx++) {
+//                Loop 23
                 for (int i = 0; i < testingData.size(); i++) {
                     if (testingData.get(i).getBeaconId().equals(request.get(idx).getId())) {
-                        distance+= StrictMath.pow(request.get(idx).getRSSI() - testingData.get(idx).getRSSI(), 2);
+                        try {
+                            distance+= StrictMath.pow(request.get(idx).getRSSI() - testingData.get(idx).getRSSI(), 2);
+                        }
+                        catch (ArrayIndexOutOfBoundsException e) {
+                            distance+=0;
+                        }
                     }
                 }
             }
             Beacons temp = new Beacons(reference.toString(), distance);
             distances.add(temp);
         }
+        System.out.println(System.currentTimeMillis());
         int closest = 5;
         if (distances.size() < 5)
             closest = distances.size();
         List<Beacons> closestDistances = new ArrayList<Beacons>(new ArrayList<Beacons>(distances).subList(0, closest)); //5 closest referencePoints
-        System.out.println("Euclidean distances: " + closestDistances);
 
 
         List<ReferencePoints> details = new ArrayList<>();

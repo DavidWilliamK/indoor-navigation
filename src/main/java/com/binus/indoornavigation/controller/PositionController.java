@@ -42,8 +42,6 @@ public class PositionController {
             @RequestBody List<Beacons> request
     ) {
 
-        System.out.println("Init " + request);
-
         Coordinate coordinate = coordinateTransformation.getCoordinateFromBeacons(request);
 
         Position position = positionTransformation.getTransformedPosition(coordinate);
