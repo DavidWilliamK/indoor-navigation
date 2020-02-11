@@ -25,18 +25,6 @@ public class PositionController {
     @Autowired
     CoordinateTransformationImpl coordinateTransformation;
 
-    @GetMapping
-    public ResponseEntity dummyApi(){
-
-        List<Signals> signals = coordinateTransformation.getAllBeacons();
-
-        return new ResponseEntity<>(
-                new BaseResponse<>(
-                        "OK", HttpStatus.OK.value(), signals
-                ), HttpStatus.OK
-        );
-    }
-
     @PostMapping
     public ResponseEntity getPositionFromCoordinates (
             @RequestBody List<Beacons> request
